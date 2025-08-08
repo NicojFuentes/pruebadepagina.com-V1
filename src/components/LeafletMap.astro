@@ -1,0 +1,140 @@
+---
+export interface Props {
+  latitude: number
+  longitude: number
+  zoom: number
+  /** the DOM ID of a <div> element */
+  container: string
+  /** https://leafletjs.com/reference.html#tilelayer */
+  tileLayer: string
+  /** Most tile servers require attribution. */
+  attribution: string
+  containerstyle?: string
+}
+
+const { latitude, longitude, zoom, container, tileLayer, attribution, containerstyle = "height: 61.8vh" } = Astro.props
+---
+
+<leaflet-map
+  data-latitude={latitude}
+  data-longitude={longitude}
+  data-zoom={zoom}
+  data-container={container}
+  data-tiles={tileLayer}
+  data-attribution={attribution}
+  data-containerstyle={containerstyle}
+>
+<div id={container} style={containerstyle}></div>
+<style>
+  /* Estilos personalizados para el mapa */
+  .leaflet-container {
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .leaflet-popup-content-wrapper {
+    background: #f69507;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(246, 149, 7, 0.3);
+  }
+  
+  .leaflet-popup-content {
+    margin: 12px 16px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .leaflet-popup-tip {
+    background: #f69507;
+  }
+  
+  .leaflet-control-zoom a {
+    background-color: #f69507 !important;
+    border-color: #f69507 !important;
+    color: white !important;
+  }
+  
+  .leaflet-control-zoom a:hover {
+    background-color: #e08606 !important;
+  }
+</style>
+
+<script>
+  import "leaflet/dist/leaflet"
+  import "leaflet/dist/leaflet.css"
+  
+  class LeafletMap extends HTMLElement {
+    constructor() {
+      super()
+      this.map = null;
+      this.initialized = false;
+    }
+    
+    initializeMap() {
+      if (this.initialized) {
+        // Si ya está inicializado, solo redimensionar
+        setTimeout(() => {
+          if (this.map) {
+            this.map.invalidateSize();
+          }
+        }, 300);
+        return;
+      }
+
+      const latlng = [Number(this.dataset.latitude), Number(this.dataset.longitude)]
+
+      this.map = window.L.map(this.dataset.container).setView(latlng, Number(this.dataset.zoom))
+      
+      // Usar tile server más confiable y rápido
+      window.L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 19,
+          subdomains: ['a', 'b', 'c'],
+          crossOrigin: true
+        }
+      ).addTo(this.map)
+      
+      // Crear icono personalizado
+      var customIcon = window.L.divIcon({
+        html: '<div style="background-color: #f69507; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+        popupAnchor: [0, -10],
+        className: 'custom-marker'
+      })
+      
+      // Agregar marcador con icono personalizado
+      window.L.marker(latlng, {icon: customIcon})
+        .addTo(this.map)
+        .bindPopup('<strong>TeclesChile</strong><br>Santiago, Chile<br>📍 Nuestra ubicación')
+        .openPopup()
+      
+      // Ocultar loader cuando el mapa esté listo
+      this.map.whenReady(() => {
+        const loader = document.getElementById('mapLoader');
+        if (loader) {
+          setTimeout(() => {
+            loader.style.opacity = '0';
+            setTimeout(() => {
+              loader.style.display = 'none';
+            }, 300);
+          }, 500); // Dar un poco de tiempo para que se carguen los tiles
+        }
+      });
+      
+      // Redimensionar mapa después de que se cargue completamente
+      setTimeout(() => {
+        if (this.map) {
+          this.map.invalidateSize();
+        }
+      }, 100);
+      
+      this.initialized = true;
+    }
+  }
+
+  window.customElements.define("leaflet-map", LeafletMap);
+</script>

@@ -1,4 +1,9 @@
 ---
+import '@fontsource/barlow/300.css';
+import '@fontsource/barlow/400.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/500.css';
+import '@fontsource/poppins/600.css';
 import '../styles/global.css'
 
 const { TeclesChile } = Astro.props;
@@ -8,11 +13,80 @@ const { TeclesChile } = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<title>Astro Basics</title>
+		<link rel="icon" type="image/png" href="/Images/Logo.png" />
+		<title>TeclesChile</title>
 	</head>
 	<body>
 		<slot />
+		
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const toggleMapBtn = document.getElementById('toggleMapBtn');
+				const mapModal = document.getElementById('mapModal');
+				const closeMapBtn = document.getElementById('closeMapBtn');
+				const mapButtonText = document.getElementById('mapButtonText');
+
+				// Función para abrir el modal
+				function openModal() {
+					mapModal.classList.remove('hidden');
+					document.body.style.overflow = 'hidden'; // Evitar scroll del body
+					
+					// Animación de entrada
+					setTimeout(() => {
+						mapModal.classList.remove('opacity-0');
+						const modalContent = mapModal.querySelector('div > div');
+						modalContent.classList.remove('scale-95');
+						modalContent.classList.add('scale-100');
+						
+						// Inicializar el mapa después de que el modal sea visible
+						setTimeout(() => {
+							const leafletMapElement = document.querySelector('leaflet-map');
+							if (leafletMapElement && leafletMapElement.initializeMap) {
+								leafletMapElement.initializeMap();
+							}
+						}, 100);
+					}, 10);
+				}
+
+				// Función para cerrar el modal
+				function closeModal() {
+					mapModal.classList.add('opacity-0');
+					const modalContent = mapModal.querySelector('div > div');
+					modalContent.classList.add('scale-95');
+					modalContent.classList.remove('scale-100');
+					
+					setTimeout(() => {
+						mapModal.classList.add('hidden');
+						document.body.style.overflow = ''; // Restaurar scroll del body
+					}, 300);
+				}
+
+				// Event listeners
+				if (toggleMapBtn && mapModal) {
+					toggleMapBtn.addEventListener('click', openModal);
+				}
+
+				if (closeMapBtn) {
+					closeMapBtn.addEventListener('click', closeModal);
+				}
+
+				// Cerrar modal al hacer clic en el overlay
+				if (mapModal) {
+					mapModal.addEventListener('click', function(e) {
+						if (e.target === mapModal) {
+							closeModal();
+						}
+					});
+				}
+
+				// Cerrar modal con tecla Escape
+				document.addEventListener('keydown', function(e) {
+					if (e.key === 'Escape' && !mapModal.classList.contains('hidden')) {
+						closeModal();
+					}
+				});
+			});
+		</script>
 	</body>
 </html>
 

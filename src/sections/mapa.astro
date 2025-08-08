@@ -1,0 +1,45 @@
+---
+import LeafletMap from "@/components/LeafletMap.astro"
+---
+
+<!-- Modal Overlay del Mapa -->
+<div id="mapModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-all duration-300 opacity-0">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full relative transform scale-95 transition-all duration-300">
+            <!-- Botón de cerrar -->
+            <button id="closeMapBtn" class="absolute top-4 right-4 z-10 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors duration-200 shadow-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            
+            <!-- Título del modal -->
+            <div class="p-6 pb-0">
+                <h2 class="text-2xl font-bold text-primary mb-2 font-special">Nuestra Ubicación</h2>
+                <p class="text-secundary">TeclesChile - Santiago, Chile</p>
+            </div>
+            
+            <!-- Contenedor del mapa -->
+            <div class="p-6 pt-4">
+                <div class="rounded-xl overflow-hidden shadow-lg relative">
+                    <!-- Indicador de carga -->
+                    <div id="mapLoader" class="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
+                        <div class="text-center">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+                            <p class="text-gray-600">Cargando mapa...</p>
+                        </div>
+                    </div>
+                    <LeafletMap
+                        latitude={-33.5286047}
+                        longitude={-70.6783077}
+                        zoom={15}
+                        container="map"
+                        tileLayer="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        containerstyle="height: 500px; width: 100%;"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
