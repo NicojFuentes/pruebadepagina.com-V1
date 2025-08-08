@@ -1,0 +1,94 @@
+---
+// Props del componente Services
+export interface Props {
+  title?: string;
+}
+
+const { title = "Nuestros Servicios" } = Astro.props;
+
+const services = [
+  {
+    title: "Desarrollo Web",
+    description: "Creamos sitios web modernos y responsivos",
+    icon: "🌐"
+  },
+  {
+    title: "Diseño UI/UX",
+    description: "Diseñamos experiencias de usuario intuitivas",
+    icon: "🎨"
+  },
+  {
+    title: "Consultoría",
+    description: "Asesoramos en estrategias digitales",
+    icon: "💡"
+  }
+];
+---
+
+<section class="services">
+  <div class="services-content">
+    <h2>{title}</h2>
+    <div class="services-grid">
+      {services.map(service => (
+        <div class="service-card">
+          <div class="service-icon">{service.icon}</div>
+          <h3>{service.title}</h3>
+          <p>{service.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .services {
+    padding: 4rem 2rem;
+    background: white;
+  }
+
+  .services-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .services h2 {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: #333;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .service-card {
+    padding: 2rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  }
+
+  .service-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .service-card h3 {
+    color: #007acc;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+
+  .service-card p {
+    color: #666;
+    line-height: 1.6;
+  }
+</style>
